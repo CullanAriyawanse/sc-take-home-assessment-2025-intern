@@ -1,6 +1,11 @@
 package folder
 
-import "github.com/gofrs/uuid"
+import (
+	"slices"
+	"strings"
+
+	"github.com/gofrs/uuid"
+)
 
 func GetAllFolders() []Folder {
 	return GetSampleData()
@@ -21,7 +26,19 @@ func (f *driver) GetFoldersByOrgID(orgID uuid.UUID) []Folder {
 }
 
 func (f *driver) GetAllChildFolders(orgID uuid.UUID, name string) []Folder {
-	// Your code here...
+	folderData := GetSampleData()
 
-	return []Folder{}
+	childFolders := []Folder{}
+
+	// Split path into slice, if index of parent folder is less than child folder, add child folder to slice
+	for _, node := range folderData {
+		splitString := strings.Split(node.Paths, ".")
+		parentFolderIndex := slices.Index(splitString, name)
+		childFolderIndex := slices.Index(splitString, node.Name)
+		if parentFolderIndex < childFolderIndex && parentFolderIndex != -1 {
+			childFolders = append(childFolders, node)
+		}
+	}
+
+	return childFolders
 }
