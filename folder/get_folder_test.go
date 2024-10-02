@@ -9,7 +9,32 @@ import (
 	// "github.com/stretchr/testify/assert"
 )
 
-// feel free to change how the unit test is structured
+func Test_folder_GetAllFolders(t *testing.T) {
+	allFolders := folder.GetAllFolders()
+	expectedFirstIndex := folder.Folder{
+		Name:  "test-folder",
+		OrgId: uuid.FromStringOrNil("38b9879b-f73b-4b0e-b9d9-4fc4c23643a1"),
+		Paths: "test-folder",
+	}
+
+	gotFirstIndex := allFolders[0]
+
+	if expectedFirstIndex != gotFirstIndex {
+		t.Errorf("GetAllFolders() = %v, want %v", gotFirstIndex, expectedFirstIndex)
+	}
+
+	expectedLastIndex := folder.Folder{
+		Name:  "alive-tsunami",
+		OrgId: uuid.FromStringOrNil("9b4cdb0a-cfea-4f9d-8a68-24f038fae385"),
+		Paths: "steady-insect.national-screwball.sacred-lady-shiva.quick-cyber.alive-tsunami",
+	}
+
+	gotLastIndex := allFolders[len(allFolders)-1]
+	if expectedLastIndex != gotLastIndex {
+		t.Errorf("GetAllFolders() = %v, want %v", gotLastIndex, expectedLastIndex)
+	}
+}
+
 func Test_folder_GetFoldersByOrgID(t *testing.T) {
 	t.Parallel()
 	tests := [...]struct {
