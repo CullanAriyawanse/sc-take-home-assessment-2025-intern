@@ -53,6 +53,36 @@ func Test_folder_GetFoldersByOrgID(t *testing.T) {
 				{Name: "test-folder", OrgId: uuid.FromStringOrNil("38b9879b-f73b-4b0e-b9d9-4fc4c23643a1"), Paths: "test-folder"},
 			},
 		},
+		{
+			name:  "Multiple folders",
+			orgID: uuid.FromStringOrNil("38b9879b-f73b-4b0e-b9d9-4fc4c23643a1"),
+			folders: []folder.Folder{
+				{Name: "test-folder", OrgId: uuid.FromStringOrNil("38b9879b-f73b-4b0e-b9d9-4fc4c23643a1"), Paths: "test-folder"},
+				{Name: "test-folder1", OrgId: uuid.FromStringOrNil("38b9879b-f73b-4b0e-b9d9-4fc4c23643a2"), Paths: "test-folder1"},
+			},
+			want: []folder.Folder{
+				{Name: "test-folder", OrgId: uuid.FromStringOrNil("38b9879b-f73b-4b0e-b9d9-4fc4c23643a1"), Paths: "test-folder"},
+			},
+		},
+		{
+			name:  "Multiple folders same name",
+			orgID: uuid.FromStringOrNil("38b9879b-f73b-4b0e-b9d9-4fc4c23643a1"),
+			folders: []folder.Folder{
+				{Name: "test-folder", OrgId: uuid.FromStringOrNil("38b9879b-f73b-4b0e-b9d9-4fc4c23643a1"), Paths: "test-folder"},
+				{Name: "test-folder", OrgId: uuid.FromStringOrNil("38b9879b-f73b-4b0e-b9d9-4fc4c23643a2"), Paths: "test-folder"},
+			},
+			want: []folder.Folder{
+				{Name: "test-folder", OrgId: uuid.FromStringOrNil("38b9879b-f73b-4b0e-b9d9-4fc4c23643a1"), Paths: "test-folder"},
+			},
+		},
+		{
+			name:  "Invalid OrgId",
+			orgID: uuid.FromStringOrNil("38b9879b-f73b-4b0e-b9d9-4fc4c23643a2"),
+			folders: []folder.Folder{
+				{Name: "test-folder", OrgId: uuid.FromStringOrNil("38b9879b-f73b-4b0e-b9d9-4fc4c23643a1"), Paths: "test-folder"},
+			},
+			want: []folder.Folder{},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
