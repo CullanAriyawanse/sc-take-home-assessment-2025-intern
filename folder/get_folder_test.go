@@ -94,3 +94,64 @@ func Test_folder_GetFoldersByOrgID(t *testing.T) {
 		})
 	}
 }
+
+func Test_folder_GetAllChildFolders(t *testing.T) {
+	t.Parallel()
+	tests := [...]struct {
+		name             string
+		orgID            uuid.UUID
+		parentFolderName string
+		folders          []folder.Folder
+		expected         []folder.Folder
+	}{
+		{
+			name:             "Base Case",
+			orgID:            uuid.FromStringOrNil("38b9879b-f73b-4b0e-b9d9-4fc4c23643a7"),
+			parentFolderName: "creative-scalphunter",
+			folders: []folder.Folder{
+				{Name: "test-folder", OrgId: uuid.FromStringOrNil("38b9879b-f73b-4b0e-b9d9-4fc4c23643a7"), Paths: "test-folder"},
+				{Name: "creative-scalphunter", OrgId: uuid.FromStringOrNil("38b9879b-f73b-4b0e-b9d9-4fc4c23643a7"), Paths: "creative-scalphunter"},
+				{Name: "clear-arclight", OrgId: uuid.FromStringOrNil("38b9879b-f73b-4b0e-b9d9-4fc4c23643a7"), Paths: "creative-scalphunter.clear-arclight"},
+			},
+			expected: []folder.Folder{
+				{Name: "clear-arclight", OrgId: uuid.FromStringOrNil("38b9879b-f73b-4b0e-b9d9-4fc4c23643a7"), Paths: "creative-scalphunter.clear-arclight"},
+			},
+		},
+		{
+			name:             "No child folders",
+			orgID:            uuid.FromStringOrNil("38b9879b-f73b-4b0e-b9d9-4fc4c23643a1"),
+			parentFolderName: "test-folder",
+			folders: []folder.Folder{
+				{Name: "test-folder", OrgId: uuid.FromStringOrNil("38b9879b-f73b-4b0e-b9d9-4fc4c23643a1"), Paths: "test-folder"},
+			},
+			expected: []folder.Folder{},
+		},
+		{
+			name:             "Invalid OrgID",
+			orgID:            uuid.FromStringOrNil(""),
+			parentFolderName: "test-folder",
+			folders: []folder.Folder{
+				{Name: "test-folder", OrgId: uuid.FromStringOrNil("38b9879b-f73b-4b0e-b9d9-4fc4c23643a1"), Paths: "test-folder"},
+			},
+			expected: []folder.Folder{},
+		},
+		{
+			name:             "Invalid folder name",
+			orgID:            uuid.FromStringOrNil("38b9879b-f73b-4b0e-b9d9-4fc4c23643a1"),
+			parentFolderName: "",
+			folders: []folder.Folder{
+				{Name: "test-folder", OrgId: uuid.FromStringOrNil("38b9879b-f73b-4b0e-b9d9-4fc4c23643a1"), Paths: "test-folder"},
+			},
+			expected: []folder.Folder{},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			f := folder.NewDriver(tt.folders)
+			got := f.GetAllChildFolders(tt.orgID, tt.parentFolderName)
+			if !reflect.DeepEqual(got, tt.expected) {
+				t.Errorf("GetAllChildFolders() = %v, expected %v", got, tt.expected)
+			}
+		})
+	}
+}

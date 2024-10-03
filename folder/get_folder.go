@@ -26,7 +26,8 @@ func (f *driver) GetFoldersByOrgID(orgID uuid.UUID) []Folder {
 }
 
 func (f *driver) GetAllChildFolders(orgID uuid.UUID, name string) []Folder {
-	folderData := GetSampleData()
+	// folderData := GetSampleData()
+	folderData := f.folders
 
 	childFolders := []Folder{}
 
