@@ -127,6 +127,19 @@ func Test_folder_GetAllChildFolders(t *testing.T) {
 			expected: []folder.Folder{},
 		},
 		{
+			name:             "Same folder name different orgId",
+			orgID:            uuid.FromStringOrNil("38b9879b-f73b-4b0e-b9d9-4fc4c23643a1"),
+			parentFolderName: "test-folder",
+			folders: []folder.Folder{
+				{Name: "test-folder", OrgId: uuid.FromStringOrNil("38b9879b-f73b-4b0e-b9d9-4fc4c23643a1"), Paths: "test-folder"},
+				{Name: "folder1", OrgId: uuid.FromStringOrNil("38b9879b-f73b-4b0e-b9d9-4fc4c23643a1"), Paths: "test-folder.folder1"},
+				{Name: "folder1", OrgId: uuid.FromStringOrNil("38b9879b-f73b-4b0e-b9d9-ffffffffffff"), Paths: "test-folder.folder1"},
+			},
+			expected: []folder.Folder{
+				{Name: "folder1", OrgId: uuid.FromStringOrNil("38b9879b-f73b-4b0e-b9d9-4fc4c23643a1"), Paths: "test-folder.folder1"},
+			},
+		},
+		{
 			name:             "Invalid OrgID",
 			orgID:            uuid.FromStringOrNil(""),
 			parentFolderName: "test-folder",
