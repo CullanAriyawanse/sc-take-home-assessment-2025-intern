@@ -103,6 +103,7 @@ func Test_folder_GetAllChildFolders(t *testing.T) {
 		parentFolderName string
 		folders          []folder.Folder
 		expected         []folder.Folder
+		expectedError    string
 	}{
 		{
 			name:             "Base Case",
@@ -155,15 +156,30 @@ func Test_folder_GetAllChildFolders(t *testing.T) {
 			folders: []folder.Folder{
 				{Name: "test-folder", OrgId: uuid.FromStringOrNil("38b9879b-f73b-4b0e-b9d9-4fc4c23643a1"), Paths: "test-folder"},
 			},
-			expected: []folder.Folder{},
+			expectedError: "Folder does not exist",
+		},
+		{
+			name:             "Invalid folder name for given orgID",
+			orgID:            uuid.FromStringOrNil("38b9879b-f73b-4b0e-b9d9-fffffffffff"),
+			parentFolderName: "test-folder",
+			folders: []folder.Folder{
+				{Name: "test-folder", OrgId: uuid.FromStringOrNil("38b9879b-f73b-4b0e-b9d9-4fc4c23643a1"), Paths: "test-folder"},
+			},
+			expectedError: "Folder does not exist in the specified organization",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			f := folder.NewDriver(tt.folders)
-			got := f.GetAllChildFolders(tt.orgID, tt.parentFolderName)
-			if !reflect.DeepEqual(got, tt.expected) {
-				t.Errorf("GetAllChildFolders() = %v, expected %v", got, tt.expected)
+			got, err := f.GetAllChildFolders(tt.orgID, tt.parentFolderName)
+			if tt.expectedError != "" {
+				if err == nil || err.Error() != tt.expectedError {
+					t.Errorf("GetAllChildFolders() error = %v, expected error %v", err, tt.expectedError)
+				}
+			} else {
+				if !reflect.DeepEqual(got, tt.expected) {
+					t.Errorf("GetAllChildFolders() = %v, expected %v", got, tt.expected)
+				}
 			}
 		})
 	}

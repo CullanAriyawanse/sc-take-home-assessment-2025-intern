@@ -1,6 +1,7 @@
 package folder
 
 import (
+	"errors"
 	"slices"
 	"strings"
 
@@ -25,21 +26,47 @@ func (f *driver) GetFoldersByOrgID(orgID uuid.UUID) []Folder {
 
 }
 
-func (f *driver) GetAllChildFolders(orgID uuid.UUID, name string) []Folder {
+func (f *driver) GetAllChildFolders(orgID uuid.UUID, name string) ([]Folder, error) {
 	// folderData := GetSampleData()
 	folderData := f.folders
 
+	var err error
+
 	childFolders := []Folder{}
+	foundFolderDifferentOrg := false
+	foundFolderWithOrg := false
 
 	// Split path into slice, if index of parent folder is less than child folder, add child folder to slice
 	for _, node := range folderData {
 		splitString := strings.Split(node.Paths, ".")
 		parentFolderIndex := slices.Index(splitString, name)
+
+		// If parent folder found but with a different orgID, continue
+		if parentFolderIndex != -1 && node.OrgId != orgID {
+			foundFolderDifferentOrg = true
+			continue
+			// If parent folder found with the correct orgID
+		} else if parentFolderIndex != -1 && node.OrgId == orgID {
+			foundFolderWithOrg = true
+		}
+
 		childFolderIndex := slices.Index(splitString, node.Name)
 		if parentFolderIndex < childFolderIndex && parentFolderIndex != -1 {
 			childFolders = append(childFolders, node)
 		}
 	}
 
-	return childFolders
+	// If parent folder is never found
+	if !foundFolderDifferentOrg && !foundFolderWithOrg {
+		err = errors.New("Folder does not exist")
+		return childFolders, err
+	}
+
+	// If parent folder is found with different org
+	if foundFolderDifferentOrg && len(childFolders) == 0 {
+		err = errors.New("Folder does not exist in the specified organization")
+		return childFolders, err
+	}
+
+	return childFolders, nil
 }
