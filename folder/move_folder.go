@@ -12,22 +12,19 @@ func (f *driver) MoveFolder(name string, dst string) ([]Folder, error) {
 
 	var err error
 
-	// Check if source and destination folders are the same
-	if name == dst {
-		err = errors.New("Error: Cannot move a folder to a child of itself")
-		return folderData, err
-	}
-
-	var parentFolderPath string
+	var srcFolder Folder
+	var dstFolder Folder
 	var foundSrcFolder bool
+	var foundDstFolder bool
 
-	// Get path to parent folder
 	for _, folder := range folderData {
 		if folder.Name == name {
+			srcFolder = folder
 			foundSrcFolder = true
 		}
 		if folder.Name == dst {
-			parentFolderPath = folder.Paths
+			dstFolder = folder
+			foundDstFolder = true
 		}
 	}
 
@@ -38,14 +35,33 @@ func (f *driver) MoveFolder(name string, dst string) ([]Folder, error) {
 	}
 
 	// Check if destination folder exists
-	if parentFolderPath == "" {
+	if !foundDstFolder {
 		err = errors.New("Error: Destination folder does not exist")
 		return folderData, err
 	}
 
-	var newFullPath string
+	// Check if source and destination are the same
+	if name == dst {
+		err = errors.New("Error: Cannot move a folder to itself")
+		return folderData, err
+	}
 
-	// Change path of subtree
+	// Check if destination is a child of source
+	if strings.HasPrefix(dstFolder.Paths, srcFolder.Paths) {
+		err = errors.New("Error: Cannot move a folder to a child of itself")
+		return folderData, err
+	}
+
+	// Check if the source and destination belong to the same organization
+	if srcFolder.OrgId != dstFolder.OrgId {
+		err = errors.New("Error: Cannot move a folder to a different organization")
+		return folderData, err
+	}
+
+	var newFullPath string
+	parentFolderPath := dstFolder.Paths
+
+	// Change path of the source folder
 	for i, folder := range folderData {
 		if folder.Name == name {
 			newFullPath = parentFolderPath + "." + name
@@ -54,15 +70,13 @@ func (f *driver) MoveFolder(name string, dst string) ([]Folder, error) {
 		}
 	}
 
-	// Change path of all children nodes
+	// Change path of all children folders
 	for i, folder := range folderData {
 		splitString := strings.Split(folder.Paths, ".")
-
 		containsParent := slices.Contains(splitString, name)
 
-		if containsParent && folder.Name != name && folder.Name != dst {
+		if containsParent && folder.Name != name {
 			folderData[i].Paths = newFullPath + "." + folder.Name
-			break
 		}
 	}
 

@@ -58,7 +58,7 @@ func Test_folder_MoveFolder(t *testing.T) {
 		{
 			testName: "Error moving folder to child of itself",
 			name:     "alpha",
-			dst:      "charlie",
+			dst:      "bravo",
 			folders: []folder.Folder{
 				{Name: "alpha", OrgId: uuid.FromStringOrNil("c1556e17-b7c0-45a3-a6ae-9546248fb17a"), Paths: "alpha"},
 				{Name: "bravo", OrgId: uuid.FromStringOrNil("c1556e17-b7c0-45a3-a6ae-9546248fb17a"), Paths: "alpha.bravo"},
@@ -67,8 +67,8 @@ func Test_folder_MoveFolder(t *testing.T) {
 		},
 		{
 			testName: "Error moving folder to itself",
-			name:     "bravo",
-			dst:      "bravo",
+			name:     "alpha",
+			dst:      "alpha",
 			folders: []folder.Folder{
 				{Name: "alpha", OrgId: uuid.FromStringOrNil("c1556e17-b7c0-45a3-a6ae-9546248fb17a"), Paths: "alpha"},
 			},
