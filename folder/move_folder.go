@@ -1,7 +1,7 @@
 package folder
 
 import (
-	"fmt"
+	"errors"
 	"slices"
 	"strings"
 )
@@ -9,31 +9,47 @@ import (
 func (f *driver) MoveFolder(name string, dst string) ([]Folder, error) {
 	folderData := make([]Folder, len(f.folders))
 	copy(folderData, f.folders)
-	// folderData := f.folders
 
-	// var err error
+	var err error
+
+	// Check if source and destination folders are the same
+	if name == dst {
+		err = errors.New("Error: Cannot move a folder to a child of itself")
+		return folderData, err
+	}
 
 	var parentFolderPath string
+	var foundSrcFolder bool
 
 	// Get path to parent folder
 	for _, folder := range folderData {
-		fmt.Printf("Folder name is %s\n", folder.Name)
+		if folder.Name == name {
+			foundSrcFolder = true
+		}
 		if folder.Name == dst {
 			parentFolderPath = folder.Paths
-			break
 		}
 	}
 
-	fmt.Printf("Parent folder is %s!\n", parentFolderPath)
+	// Check if source folder exists
+	if !foundSrcFolder {
+		err = errors.New("Error: Source folder does not exist")
+		return folderData, err
+	}
+
+	// Check if destination folder exists
+	if parentFolderPath == "" {
+		err = errors.New("Error: Destination folder does not exist")
+		return folderData, err
+	}
 
 	var newFullPath string
+
 	// Change path of subtree
 	for i, folder := range folderData {
 		if folder.Name == name {
 			newFullPath = parentFolderPath + "." + name
-			fmt.Printf("Old path is %s\n", folder.Paths)
 			folderData[i].Paths = newFullPath
-			fmt.Printf("New path is %s\n", folder.Paths)
 			break
 		}
 	}
