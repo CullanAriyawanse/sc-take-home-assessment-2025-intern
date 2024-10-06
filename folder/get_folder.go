@@ -27,7 +27,6 @@ func (f *driver) GetFoldersByOrgID(orgID uuid.UUID) []Folder {
 }
 
 func (f *driver) GetAllChildFolders(orgID uuid.UUID, name string) ([]Folder, error) {
-	// folderData := GetSampleData()
 	folderData := f.folders
 
 	var err error
@@ -58,13 +57,13 @@ func (f *driver) GetAllChildFolders(orgID uuid.UUID, name string) ([]Folder, err
 
 	// Check if parent folder is never found
 	if !foundFolderDifferentOrg && !foundFolderWithOrg {
-		err = errors.New("Folder does not exist")
+		err = errors.New("Error: Folder does not exist")
 		return childFolders, err
 	}
 
 	// Check if parent folder is found with different org
 	if foundFolderDifferentOrg && len(childFolders) == 0 {
-		err = errors.New("Folder does not exist in the specified organization")
+		err = errors.New("Error: Folder does not exist in the specified organization")
 		return childFolders, err
 	}
 
