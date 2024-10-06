@@ -56,13 +56,13 @@ func (f *driver) GetAllChildFolders(orgID uuid.UUID, name string) ([]Folder, err
 		}
 	}
 
-	// If parent folder is never found
+	// Check if parent folder is never found
 	if !foundFolderDifferentOrg && !foundFolderWithOrg {
 		err = errors.New("Folder does not exist")
 		return childFolders, err
 	}
 
-	// If parent folder is found with different org
+	// Check if parent folder is found with different org
 	if foundFolderDifferentOrg && len(childFolders) == 0 {
 		err = errors.New("Folder does not exist in the specified organization")
 		return childFolders, err

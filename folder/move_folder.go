@@ -2,7 +2,6 @@ package folder
 
 import (
 	"errors"
-	"slices"
 	"strings"
 )
 
@@ -72,11 +71,9 @@ func (f *driver) MoveFolder(name string, dst string) ([]Folder, error) {
 
 	// Change path of all children folders
 	for i, folder := range folderData {
-		splitString := strings.Split(folder.Paths, ".")
-		containsParent := slices.Contains(splitString, name)
-
-		if containsParent && folder.Name != name {
-			folderData[i].Paths = newFullPath + "." + folder.Name
+		if strings.HasPrefix(folder.Paths, srcFolder.Paths) {
+			newSubPath := strings.Replace(folder.Paths, srcFolder.Paths, newFullPath, 1)
+			folderData[i].Paths = newSubPath
 		}
 	}
 

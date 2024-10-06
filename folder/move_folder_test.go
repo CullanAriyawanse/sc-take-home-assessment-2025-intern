@@ -14,7 +14,6 @@ func Test_folder_MoveFolder(t *testing.T) {
 		testName      string
 		name          string
 		dst           string
-		orgID         uuid.UUID
 		folders       []folder.Folder
 		expected      []folder.Folder
 		expectedError string
@@ -37,22 +36,37 @@ func Test_folder_MoveFolder(t *testing.T) {
 			},
 		},
 		{
-			testName: "Base Case 2",
-			name:     "bravo",
-			dst:      "golf",
+			testName: "Move Folder with Subfolders",
+			name:     "alpha",
+			dst:      "delta",
 			folders: []folder.Folder{
 				{Name: "alpha", OrgId: uuid.FromStringOrNil("c1556e17-b7c0-45a3-a6ae-9546248fb17a"), Paths: "alpha"},
 				{Name: "bravo", OrgId: uuid.FromStringOrNil("c1556e17-b7c0-45a3-a6ae-9546248fb17a"), Paths: "alpha.bravo"},
 				{Name: "charlie", OrgId: uuid.FromStringOrNil("c1556e17-b7c0-45a3-a6ae-9546248fb17a"), Paths: "alpha.bravo.charlie"},
-				{Name: "delta", OrgId: uuid.FromStringOrNil("c1556e17-b7c0-45a3-a6ae-9546248fb17a"), Paths: "alpha.delta"},
-				{Name: "golf", OrgId: uuid.FromStringOrNil("c1556e17-b7c0-45a3-a6ae-9546248fb17a"), Paths: "golf"},
+				{Name: "delta", OrgId: uuid.FromStringOrNil("c1556e17-b7c0-45a3-a6ae-9546248fb17a"), Paths: "delta"},
 			},
 			expected: []folder.Folder{
+				{Name: "alpha", OrgId: uuid.FromStringOrNil("c1556e17-b7c0-45a3-a6ae-9546248fb17a"), Paths: "delta.alpha"},
+				{Name: "bravo", OrgId: uuid.FromStringOrNil("c1556e17-b7c0-45a3-a6ae-9546248fb17a"), Paths: "delta.alpha.bravo"},
+				{Name: "charlie", OrgId: uuid.FromStringOrNil("c1556e17-b7c0-45a3-a6ae-9546248fb17a"), Paths: "delta.alpha.bravo.charlie"},
+				{Name: "delta", OrgId: uuid.FromStringOrNil("c1556e17-b7c0-45a3-a6ae-9546248fb17a"), Paths: "delta"},
+			},
+		},
+		{
+			testName: "Moving root folder",
+			name:     "alpha",
+			dst:      "bravo",
+			folders: []folder.Folder{
 				{Name: "alpha", OrgId: uuid.FromStringOrNil("c1556e17-b7c0-45a3-a6ae-9546248fb17a"), Paths: "alpha"},
-				{Name: "bravo", OrgId: uuid.FromStringOrNil("c1556e17-b7c0-45a3-a6ae-9546248fb17a"), Paths: "golf.bravo"},
-				{Name: "charlie", OrgId: uuid.FromStringOrNil("c1556e17-b7c0-45a3-a6ae-9546248fb17a"), Paths: "golf.bravo.charlie"},
+				{Name: "bravo", OrgId: uuid.FromStringOrNil("c1556e17-b7c0-45a3-a6ae-9546248fb17a"), Paths: "bravo"},
+				{Name: "charlie", OrgId: uuid.FromStringOrNil("c1556e17-b7c0-45a3-a6ae-9546248fb17a"), Paths: "alpha.charlie"},
 				{Name: "delta", OrgId: uuid.FromStringOrNil("c1556e17-b7c0-45a3-a6ae-9546248fb17a"), Paths: "alpha.delta"},
-				{Name: "golf", OrgId: uuid.FromStringOrNil("c1556e17-b7c0-45a3-a6ae-9546248fb17a"), Paths: "golf"},
+			},
+			expected: []folder.Folder{
+				{Name: "alpha", OrgId: uuid.FromStringOrNil("c1556e17-b7c0-45a3-a6ae-9546248fb17a"), Paths: "bravo.alpha"},
+				{Name: "bravo", OrgId: uuid.FromStringOrNil("c1556e17-b7c0-45a3-a6ae-9546248fb17a"), Paths: "bravo"},
+				{Name: "charlie", OrgId: uuid.FromStringOrNil("c1556e17-b7c0-45a3-a6ae-9546248fb17a"), Paths: "bravo.alpha.charlie"},
+				{Name: "delta", OrgId: uuid.FromStringOrNil("c1556e17-b7c0-45a3-a6ae-9546248fb17a"), Paths: "bravo.alpha.delta"},
 			},
 		},
 		{

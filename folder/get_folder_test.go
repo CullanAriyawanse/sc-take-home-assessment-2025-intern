@@ -134,7 +134,7 @@ func Test_folder_GetAllChildFolders(t *testing.T) {
 			folders: []folder.Folder{
 				{Name: "test-folder", OrgId: uuid.FromStringOrNil("38b9879b-f73b-4b0e-b9d9-4fc4c23643a1"), Paths: "test-folder"},
 				{Name: "folder1", OrgId: uuid.FromStringOrNil("38b9879b-f73b-4b0e-b9d9-4fc4c23643a1"), Paths: "test-folder.folder1"},
-				{Name: "folder1", OrgId: uuid.FromStringOrNil("38b9879b-f73b-4b0e-b9d9-ffffffffffff"), Paths: "test-folder.folder1"},
+				{Name: "folder1", OrgId: uuid.FromStringOrNil("38b9879b-f73b-4b0e-b9d9-ffffffffffff"), Paths: "test-folder.folder1"}, // Different org
 			},
 			expected: []folder.Folder{
 				{Name: "folder1", OrgId: uuid.FromStringOrNil("38b9879b-f73b-4b0e-b9d9-4fc4c23643a1"), Paths: "test-folder.folder1"},
@@ -166,6 +166,22 @@ func Test_folder_GetAllChildFolders(t *testing.T) {
 				{Name: "test-folder", OrgId: uuid.FromStringOrNil("38b9879b-f73b-4b0e-b9d9-4fc4c23643a1"), Paths: "test-folder"},
 			},
 			expectedError: "Folder does not exist in the specified organization",
+		},
+		{
+			name:             "Multiple subfolders",
+			orgID:            uuid.FromStringOrNil("38b9879b-f73b-4b0e-b9d9-4fc4c23643a7"),
+			parentFolderName: "creative-scalphunter",
+			folders: []folder.Folder{
+				{Name: "creative-scalphunter", OrgId: uuid.FromStringOrNil("38b9879b-f73b-4b0e-b9d9-4fc4c23643a7"), Paths: "creative-scalphunter"},
+				{Name: "clear-arclight", OrgId: uuid.FromStringOrNil("38b9879b-f73b-4b0e-b9d9-4fc4c23643a7"), Paths: "creative-scalphunter.clear-arclight"},
+				{Name: "bravo", OrgId: uuid.FromStringOrNil("38b9879b-f73b-4b0e-b9d9-4fc4c23643a7"), Paths: "creative-scalphunter.clear-arclight.bravo"},
+				{Name: "charlie", OrgId: uuid.FromStringOrNil("38b9879b-f73b-4b0e-b9d9-4fc4c23643a7"), Paths: "creative-scalphunter.clear-arclight.charlie"},
+			},
+			expected: []folder.Folder{
+				{Name: "clear-arclight", OrgId: uuid.FromStringOrNil("38b9879b-f73b-4b0e-b9d9-4fc4c23643a7"), Paths: "creative-scalphunter.clear-arclight"},
+				{Name: "bravo", OrgId: uuid.FromStringOrNil("38b9879b-f73b-4b0e-b9d9-4fc4c23643a7"), Paths: "creative-scalphunter.clear-arclight.bravo"},
+				{Name: "charlie", OrgId: uuid.FromStringOrNil("38b9879b-f73b-4b0e-b9d9-4fc4c23643a7"), Paths: "creative-scalphunter.clear-arclight.charlie"},
+			},
 		},
 	}
 	for _, tt := range tests {
